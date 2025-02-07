@@ -109,7 +109,8 @@ E-COMMERCE-AND-BANKING-FRAUD-DETECTION/
 ├── tests # Function to test module under scripts
 ├── .gitignore #
 ├── README.md # This file
-├── requirements.txt # List of Python packages needed```
+├── requirements.txt # List of Python packages needed
+```
 
 ## Instructions for Running the Project
 
