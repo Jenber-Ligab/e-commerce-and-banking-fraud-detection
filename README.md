@@ -84,10 +84,7 @@ This task involves preparing the datasets for model training.  The following ste
     *   Convert categorical features into numerical format using techniques like one-hot encoding or label encoding for compatibility with machine learning models.
 
 ## Repository Structure (Example - Adapt as needed)
-content_copy
-download
-Use code with caution.
-Markdown
+```
 
 E-COMMERCE-AND-BANKING-FRAUD-DETECTION/
 ├── .github/
@@ -112,7 +109,7 @@ E-COMMERCE-AND-BANKING-FRAUD-DETECTION/
 ├── tests # Function to test module under scripts
 ├── .gitignore #
 ├── README.md # This file
-├── requirements.txt # List of Python packages needed
+├── requirements.txt # List of Python packages needed```
 
 ## Instructions for Running the Project
 
