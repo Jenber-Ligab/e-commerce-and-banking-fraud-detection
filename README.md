@@ -57,7 +57,7 @@ After running multiple experiments with different models and hyperparameters, we
 *   **Visualization and Analysis:** MLflow provides a table and plots to visualize the differences between the selected runs.  You can compare metrics (e.g., accuracy, F1-score, AUC), parameters (e.g., learning rate, regularization strength), and other relevant information.
 
     **[Capture of MLflow UI showing comparison of different model metrics across different models and parameters.  Highlighting key metrics like F1-score, precision, recall, AUC, and training time.  Indicate the best-performing model based on the chosen criteria. The capture should also include column showing the source file location and the date of the model.]**
-![MLflow UI Model Comparison](ScreenShoots/mlflow/*)
+![MLflow UI Model Comparison](ScreenShoots/mlflow/)
     
 
     *   **Note:**  This screenshot should show a clear comparison table highlighting the best-performing model based on the chosen metrics. For example, it might show that Random Forest had the highest F1-score and AUC, indicating better overall performance in fraud detection compared to Logistic Regression or Decision Tree. This will allow for good model selection.
