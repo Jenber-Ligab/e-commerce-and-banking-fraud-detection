@@ -136,40 +136,40 @@ class ModelPipeline:
     #        print(f"{name} best parameters: {search.best_params_}")
     #
     #    self.models.update(best_models)
-def hyperparameter_tuning(self):
-    """Faster hyperparameter tuning with simplified grids."""
-    param_grids = {
-        'Random Forest': {'classifier__n_estimators': [100], 'classifier__max_depth': [5, 10]},
-        'Gradient Boosting': {'classifier__learning_rate': [0.1], 'classifier__n_estimators': [100]},
-        'Logistic Regression': {'classifier__C': [1, 10], 'classifier__solver': ['liblinear']},
-        'Decision Tree': {'classifier__max_depth': [5, 10], 'classifier__min_samples_split': [2]}
-    }
-
-    best_models = {}
-
-    for name, model in self.models.items():
-        if name in ['MLP','RNN','LSTM','CNN']: 
-            continue
-
-        print(f"Quick tuning for {name}...")
-        pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', model)
-        ])
-
-        search = RandomizedSearchCV(
-            pipeline,
-            param_distributions=param_grids[name],
-            n_iter=2,
-            cv=2,
-            scoring='accuracy',
-            n_jobs=-1
-        )
-
-        search.fit(self.X_train, self.y_train)
-        best_models[name] = search.best_estimator_
-
-    self.models.update(best_models)
+    def hyperparameter_tuning(self):
+        """Faster hyperparameter tuning with simplified grids."""
+        param_grids = {
+            'Random Forest': {'classifier__n_estimators': [100], 'classifier__max_depth': [5, 10]},
+            'Gradient Boosting': {'classifier__learning_rate': [0.1], 'classifier__n_estimators': [100]},
+            'Logistic Regression': {'classifier__C': [1, 10], 'classifier__solver': ['liblinear']},
+            'Decision Tree': {'classifier__max_depth': [5, 10], 'classifier__min_samples_split': [2]}
+        }
+    
+        best_models = {}
+    
+        for name, model in self.models.items():
+            if name in ['MLP','RNN','LSTM','CNN']: 
+                continue
+            
+            print(f"Quick tuning for {name}...")
+            pipeline = Pipeline([
+                ('scaler', StandardScaler()),
+                ('classifier', model)
+            ])
+    
+            search = RandomizedSearchCV(
+                pipeline,
+                param_distributions=param_grids[name],
+                n_iter=2,
+                cv=2,
+                scoring='accuracy',
+                n_jobs=-1
+            )
+    
+            search.fit(self.X_train, self.y_train)
+            best_models[name] = search.best_estimator_
+    
+        self.models.update(best_models)
 
     def train_and_evaluate(self):
         """
@@ -180,9 +180,12 @@ def hyperparameter_tuning(self):
     
         best_model = None
         best_score = 0
-    
         for name, model in self.models.items():
             with mlflow.start_run(run_name=name):
+                # Log model type and dataset info
+                mlflow.log_param("dataset", "creditcard_or_fraud_data")  # Update name
+                mlflow.log_param("model_type", name)
+
                 start_time = time.time()
                 
                 # Handle all neural networks
@@ -211,16 +214,15 @@ def hyperparameter_tuning(self):
                     # Predict probabilities
                     y_prob = model.predict(X_test_reshaped).flatten()
                     y_pred = (y_prob > 0.5).astype(int)
-    
+                    # Log Keras model
+                    mlflow.keras.log_model(model, f"{name}_model")
                 # Handle classical ML models
                 else:
                     model.fit(self.X_train, self.y_train)
                     y_pred = model.predict(self.X_test)
                     y_prob = model.predict_proba(self.X_test)[:, 1]  # Only for non-NN models
-    
-                # Rest of the evaluation code remains the same
-                # ...
-
+                    # Log sklearn model
+                    mlflow.sklearn.log_model(model, f"{name}_model")   
                 end_time = time.time()
                 training_duration = end_time - start_time
                 print(f"{name} took {training_duration:.2f} seconds to train")
@@ -234,11 +236,14 @@ def hyperparameter_tuning(self):
                 f1 = f1_score(self.y_test, y_pred)
                 roc_auc = roc_auc_score(self.y_test, y_prob)
 
-                mlflow.log_metric("accuracy", accuracy)
-                mlflow.log_metric("precision", precision)
-                mlflow.log_metric("recall", recall)
-                mlflow.log_metric("f1_score", f1)
-                mlflow.log_metric("roc_auc", roc_auc)
+                # Log metrics
+                mlflow.log_metrics({
+                    "accuracy": accuracy,
+                    "precision": precision,
+                    "recall": recall,
+                    "f1": f1,
+                    "roc_auc": roc_auc
+                })
 
                 # Log hyperparameters
                 if name in ['Random Forest', 'Gradient Boosting']:
