@@ -4,3 +4,6 @@
 *.pyc
 __pycache__/
 /logs
+/mlruns_artifacts
+/app
+/mlruns.db
