@@ -1,2 +1,9 @@
 .venv
 /data
+/scripts/__pycache*
+*.pyc
+__pycache__/
+/logs
+/mlruns_artifacts
+/app
+/mlruns.db
