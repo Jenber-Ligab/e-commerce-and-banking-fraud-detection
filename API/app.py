@@ -15,12 +15,41 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+try:
+  import gdown # type: ignore
+except ImportError:
+  print("Error: gdown package not found. Please ensure gdown is in your requirements.txt file")
+  gdown = None
+
+def download_file_from_google_drive(file_id, destination):
+    """
+    Downloads a file from Google Drive using gdown.
+
+    Args:
+        file_id (str): The Google Drive file ID.
+        destination (str): The local file path where the downloaded file will be saved.
+    """
+    if gdown is not None:
+        url = f"https://drive.google.com/uc?id={file_id}"
+        os.makedirs(os.path.dirname(destination), exist_ok=True)
+        gdown.download(url, destination, quiet=False)
+    else:
+      raise Exception("gdown was not imported correctly. Please make sure it is in the requirements.txt file")
+    
 # Load fraud data from CSV
-def load_fraud_data():
+
+def load_fraud_data(data_path = '../data/merged_fraud_data.csv'):
     try:
         logger.info('Loading fraud data from CSV...')
-        data = pd.read_csv('../data/merged_fraud_data.csv')  # Adjusted path for simplicity
         logger.info('Fraud data loaded successfully.')
+        if not os.path.exists(data_path):
+            file_id = '1-1AAuHS0DejHd1WppM0bjTWi3sQKzH5i'
+            try:
+                download_file_from_google_drive(file_id, data_path)
+                data = pd.read_csv(data_path)  # Adjusted path for simplicity
+            except Exception as e:
+                raise FileNotFoundError(f"Could not download the data from Google Drive. Error: {e}") 
         return data
     except Exception as e:
         logger.error(f'Error loading fraud data: {e}')
