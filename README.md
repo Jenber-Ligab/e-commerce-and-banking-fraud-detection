@@ -1,3 +1,43 @@
+# Task 5 - Build a Dashboard with Flask and Dash
+
+## Overview
+
+Create an interactive dashboard using Dash for visualizing fraud insights from your data. The Flask backend will serve data from the datasets, while Dash will be used to visualize insights.
+
+### Steps
+
+1. Add a Flask Endpoint to read fraud data from a CSV file and serve summary statistics and fraud trends through API endpoints.
+
+2. Use Dash to handle the frontend visualizations.
+
+3. Dashboard Insights:
+
++ Display total transactions, fraud cases, and fraud percentages in summary boxes.
+
++ Display a line chart showing the number of detected fraud cases over time using Flask backend data.
+
++ Analyze where fraud is occurring geographically.
+
+Show a bar chart comparing the number of fraud cases across different devices and browsers.
+#Task 4 - Model Deployment and API Development
+
+**Setting Up the Flask API**
+
+**Create the Flask Application**
+
+1. Create a new directory for your project:
+
+`kdir fraud_detection_api && cd fraud_detection_api`
+
+2. Create a Python script serve_model.py to serve the model using Flask.
+
+3. Create a requirements.txt file to list dependencies.
+
+**API Development**
+
+Define API Endpoints.
+
+Test the API using tools like Postman or curl.
 # Model Explainability for Fraud Detection
 
 ## Task 3: Model Explainability
