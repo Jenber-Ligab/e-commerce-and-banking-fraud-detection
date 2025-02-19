@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify
 import pandas as pd
 import os
 import logging
+import gdown
 
 app = Flask(__name__)
 
@@ -11,49 +12,38 @@ os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 logging.basicConfig(
     filename=LOG_FILE,
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s'  # Corrected format string
 )
 logger = logging.getLogger(__name__)
 
+# Google Drive file ID
+GOOGLE_DRIVE_FILE_ID = '1-1AAuHS0DejHd1WppM0bjTWi3sQKzH5i'  # Replace with your file ID
+TEMP_CSV_FILE = 'temp_fraud_data.csv' # Temporary file to save downloaded data
 
-try:
-  import gdown # type: ignore
-except ImportError:
-  print("Error: gdown package not found. Please ensure gdown is in your requirements.txt file")
-  gdown = None
-
-def download_file_from_google_drive(file_id, destination):
-    """
-    Downloads a file from Google Drive using gdown.
-
-    Args:
-        file_id (str): The Google Drive file ID.
-        destination (str): The local file path where the downloaded file will be saved.
-    """
-    if gdown is not None:
-        url = f"https://drive.google.com/uc?id={file_id}"
-        os.makedirs(os.path.dirname(destination), exist_ok=True)
-        gdown.download(url, destination, quiet=False)
-    else:
-      raise Exception("gdown was not imported correctly. Please make sure it is in the requirements.txt file")
-    
-# Load fraud data from CSV
-
-def load_fraud_data(data_path = '../data/merged_fraud_data.csv'):
+# Load fraud data from Google Drive using gdown
+def load_fraud_data():
     try:
-        logger.info('Loading fraud data from CSV...')
-        logger.info('Fraud data loaded successfully.')
-        if not os.path.exists(data_path):
-            file_id = '1-1AAuHS0DejHd1WppM0bjTWi3sQKzH5i'
-            try:
-                download_file_from_google_drive(file_id, data_path)
-                data = pd.read_csv(data_path)  # Adjusted path for simplicity
-            except Exception as e:
-                raise FileNotFoundError(f"Could not download the data from Google Drive. Error: {e}") 
+        logger.info('Loading fraud data from Google Drive using gdown...')
+
+        # Download the file from Google Drive
+        url = f'https://drive.google.com/uc?id={GOOGLE_DRIVE_FILE_ID}'
+        gdown.download(url, TEMP_CSV_FILE, quiet=False)
+
+        # Read the CSV data from the downloaded file
+        data = pd.read_csv(TEMP_CSV_FILE)
+
+        logger.info('Fraud data loaded successfully from Google Drive using gdown.')
         return data
     except Exception as e:
-        logger.error(f'Error loading fraud data: {e}')
+        logger.error(f'Error loading fraud data from Google Drive using gdown: {e}')
         return None
+    finally:
+        # Clean up the temporary file
+        try:
+            os.remove(TEMP_CSV_FILE)
+            logger.info('Temporary file deleted.')
+        except OSError as e:
+            logger.warning(f'Error deleting temporary file: {e}')
 
 def create_table_html(df, title=""):
     """
